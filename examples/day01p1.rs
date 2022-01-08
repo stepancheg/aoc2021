@@ -1,7 +1,7 @@
 use std::fs;
 
 fn main() {
-    let input = fs::read_to_string("input.txt").expect("Failed to read input.txt");
+    let input = fs::read_to_string("day1-input.txt").expect("Failed to read input.txt");
     let lines: Vec<_> = input.lines().collect();
     let mut prev = None;
     let mut more = 0;

@@ -1,7 +1,7 @@
 use std::fs;
 
 fn main() {
-    let content = fs::read_to_string("input.txt").unwrap();
+    let content = fs::read_to_string("day2-input.txt").unwrap();
     let mut pos = 0;
     let mut depth = 0;
     let mut depth_part_2 = 0;

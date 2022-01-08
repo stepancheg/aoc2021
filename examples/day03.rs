@@ -37,6 +37,7 @@ fn run(filename: &str) {
 }
 
 fn main() {
-    run("input-test.txt");
-    run("input.txt");
+    println!("part 1");
+    run("day03-input-test.txt");
+    run("day03-input.txt");
 }
