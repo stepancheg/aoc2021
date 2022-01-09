@@ -96,16 +96,21 @@ impl Octopuses {
             self.check_flash(r + 1, c + 1, flashes, flashed);
         }
     }
+
+    fn count(&self) -> usize {
+        self.rows.len() * self.rows[0].len()
+    }
 }
 
-fn part1(filename: &str) {
+fn run(filename: &str) {
     println!("{}", filename);
     let mut oct = Octopuses::parse(filename);
-    let mut flashes = 0;
-    for step in 0..100 {
+    let mut total_flashes = 0;
+    for step in 0.. {
         // println!("Step {}", step);
         // oct.print();
 
+        let mut flashes = 0;
         let mut flashed = HashSet::new();
         oct.inc1();
         for r in 0..oct.rows.len() {
@@ -114,12 +119,21 @@ fn part1(filename: &str) {
             }
         }
         oct.reset0();
+        total_flashes += flashes;
+
+        if step == 99 {
+            println!("{}", total_flashes);
+            assert!(total_flashes == 1656 || total_flashes == 1562);
+        }
+
+        if flashes == oct.count() as u64 {
+            println!("All flashed on step {}", step + 1);
+            break;
+        }
     }
-    println!("{}", flashes);
-    assert!(flashes == 1656 || flashes == 1562);
 }
 
 fn main() {
-    part1("day11-input-test.txt");
-    part1("day11-input.txt");
+    run("day11-input-test.txt");
+    run("day11-input.txt");
 }
