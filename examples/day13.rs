@@ -100,6 +100,7 @@ fn part1(filename: &str) {
         // dots.print();
     }
     println!("{}", dots.count_unique());
+    dots.print();
 }
 
 fn main() {
