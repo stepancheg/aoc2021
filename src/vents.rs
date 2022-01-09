@@ -39,6 +39,11 @@ impl VentLine {
     pub fn is_horiz(&self) -> bool {
         self.from.y == self.to.y
     }
+
+    pub fn is_diag(&self) -> bool {
+        (self.from.x as i32 - self.to.x as i32).abs()
+            == (self.from.y as i32 - self.to.y as i32).abs()
+    }
 }
 
 pub struct Vents {
@@ -77,6 +82,7 @@ impl Vents {
     }
 }
 
+#[derive(Clone)]
 pub struct VentsGrid {
     pub grid: Vec<Vec<u32>>,
 }
@@ -103,8 +109,17 @@ impl VentsGrid {
             for x in VentsGrid::between(line.from.x, line.to.x) {
                 self.put_point(x, line.from.y);
             }
+        } else if line.is_diag() {
+            let len = (line.from.x as i32 - line.to.x as i32).abs() as usize;
+            let xs = if line.to.x > line.from.x { 1 } else { -1 };
+            let ys = if line.to.y > line.from.y { 1 } else { -1 };
+            for i in 0..=len {
+                let x = line.from.x as i32 + (i as i32) * xs;
+                let y = line.from.y as i32 + (i as i32) * ys;
+                self.put_point(x as usize, y as usize);
+            }
         } else {
-            panic!("Line is neither vertical nor horizontal");
+            panic!("unexpected line type");
         }
     }
 
