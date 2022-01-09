@@ -6,7 +6,10 @@ fn main() {
     let mut prev = None;
     let mut more = 0;
     for i in 3..=lines.len() {
-        let depth = lines[i - 3..i].iter().map(|line| line.parse::<u32>().unwrap()).sum::<u32>();
+        let depth = lines[i - 3..i]
+            .iter()
+            .map(|line| line.parse::<u32>().unwrap())
+            .sum::<u32>();
         if let Some(prev) = prev {
             if depth > prev {
                 more += 1;
