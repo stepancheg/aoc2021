@@ -1,6 +1,5 @@
 use std::collections::BTreeMap;
 use std::collections::HashMap;
-use std::collections::HashSet;
 use std::fs;
 
 struct Rule {
@@ -56,38 +55,102 @@ impl Input {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+struct Key {
+    bounds: (char, char),
+    depth: usize,
+}
+
+#[derive(Default)]
+struct LetterStats {
+    counts: HashMap<char, usize>,
+}
+
+impl LetterStats {
+    fn add(&mut self, c: char) {
+        *self.counts.entry(c).or_insert(0) += 1;
+    }
+
+    fn add_all(&mut self, s: &LetterStats) {
+        for (c, count) in s.counts.iter() {
+            *self.counts.entry(*c).or_insert(0) += *count;
+        }
+    }
+}
+
+fn find_between<'a>(
+    rule_map: &HashMap<(char, char), char>,
+    key: &Key,
+    memo: &'a mut HashMap<Key, LetterStats>,
+) -> &'a LetterStats {
+    // println!("find_between {:?}", key);
+    if let Some(_stats) = memo.get(key) {
+        return memo.get(key).unwrap();
+    }
+    if key.depth == 0 {
+        memo.insert(key.clone(), LetterStats::default());
+        return memo.get(key).unwrap();
+    }
+    let mut stats = LetterStats::default();
+    if let Some(&x) = rule_map.get(&key.bounds) {
+        stats.add(x);
+        stats.add_all(find_between(
+            rule_map,
+            &Key {
+                bounds: (key.bounds.0, x),
+                depth: key.depth - 1,
+            },
+            memo,
+        ));
+        stats.add_all(find_between(
+            rule_map,
+            &Key {
+                bounds: (x, key.bounds.1),
+                depth: key.depth - 1,
+            },
+            memo,
+        ));
+    }
+    memo.insert(key.clone(), stats);
+    memo.get(key).unwrap()
+}
+
 fn part1(filename: &str) {
     println!("{}", filename);
     let input = Input::parse(filename);
     let mut template = input.template;
-    for i in 0..10 {
-        let mut new_template = String::new();
 
-        for (a, b) in template.chars().zip(template.chars().skip(1)) {
-            new_template.push(a);
-            if let Some(c) = input.rules_map.get(&(a, b)) {
-                new_template.push(*c);
-            }
+    let mut memo: HashMap<Key, LetterStats> = HashMap::new();
+
+    for depth in [10, 40] {
+        let mut letter_stats = LetterStats::default();
+        for c in template.chars() {
+            letter_stats.add(c);
         }
-
-        new_template.push(template.chars().last().unwrap());
-
-        template = new_template;
-        // println!("{} {}", i, template);
+        for (a, b) in template.chars().zip(template.chars().skip(1)) {
+            let key = Key {
+                bounds: (a, b),
+                depth,
+            };
+            let stats = find_between(&input.rules_map, &key, &mut memo);
+            letter_stats.add_all(stats);
+        }
+        println!("{}", depth);
+        println!("{:?}", letter_stats.counts);
+        let min = letter_stats
+            .counts
+            .iter()
+            .min_by_key(|(_, c)| *c)
+            .unwrap()
+            .1;
+        let max = letter_stats
+            .counts
+            .iter()
+            .max_by_key(|(_, c)| *c)
+            .unwrap()
+            .1;
+        println!("{}", max - min);
     }
-
-    println!("{}", template.len());
-
-    let mut counts = BTreeMap::new();
-    for c in template.chars() {
-        *counts.entry(c).or_insert(0) += 1;
-    }
-
-    println!("{:?}", counts);
-
-    let min = counts.iter().min_by_key(|(_, c)| *c).unwrap().1;
-    let max = counts.iter().max_by_key(|(_, c)| *c).unwrap().1;
-    println!("{}", max - min);
 }
 
 fn main() {
