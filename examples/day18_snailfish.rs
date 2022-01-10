@@ -1,3 +1,4 @@
+use std::cmp;
 use std::fmt;
 use std::fmt::Formatter;
 use std::fs;
@@ -345,11 +346,32 @@ fn part1(filename: &str) {
     println!("{}", sum.magnitude());
 }
 
+fn part2(filename: &str) {
+    println!("{}", filename);
+    let content = fs::read_to_string(filename).unwrap();
+    let pairs: Vec<_> = content.lines().map(|s| Pair::parse(s)).collect();
+    let mut largest_magnitude = u64::MIN;
+    for a in &pairs {
+        for b in &pairs {
+            let magnitude = Pair::add(a, b).magnitude();
+            largest_magnitude = cmp::max(largest_magnitude, magnitude);
+        }
+    }
+    println!("{}", largest_magnitude);
+}
+
 fn main() {
     test_explode();
     test_split();
     test_sum();
     test_magnitude();
+
+    println!("part 1");
     part1("day18-input-test.txt");
     part1("day18-input.txt");
+
+    println!();
+    println!("part 2");
+    part2("day18-input-test.txt");
+    part2("day18-input.txt");
 }
