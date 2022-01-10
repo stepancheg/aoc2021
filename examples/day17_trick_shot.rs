@@ -1,4 +1,5 @@
 use std::cmp;
+use std::collections::HashSet;
 
 struct Input {
     x_range: (i64, i64),
@@ -18,13 +19,14 @@ const INPUTS: [Input; 2] = [
 
 fn part1(input: &Input) {
     let mut total_max_y = i64::MIN;
+    let mut uniq_init_velocities = HashSet::new();
 
-    for v_x in 1..=input.x_range.1 {
-        println!("v_x: {}", v_x);
-        for v_y in input.y_range.0..10000 {
+    for v_x_init in 1..=input.x_range.1 {
+        println!("v_x: {}", v_x_init);
+        for v_y_init in input.y_range.0..10000 {
             // println!("v_y: {}", v_y);
-            let mut v_x = v_x;
-            let mut v_y = v_y;
+            let mut v_x = v_x_init;
+            let mut v_y = v_y_init;
 
             let mut x = 0;
             let mut y = 0;
@@ -42,6 +44,7 @@ fn part1(input: &Input) {
                     && y <= input.y_range.1
                 {
                     total_max_y = cmp::max(total_max_y, max_y);
+                    uniq_init_velocities.insert((v_x_init, v_y_init));
                     break;
                 }
 
@@ -63,7 +66,9 @@ fn part1(input: &Input) {
         }
     }
     println!("{}", total_max_y);
+    println!("{}", uniq_init_velocities.len());
     assert!(total_max_y == 45 || total_max_y == 12090);
+    assert!(uniq_init_velocities.len() == 112 || uniq_init_velocities.len() == 5059);
 }
 
 fn main() {
