@@ -1,3 +1,4 @@
+use std::cmp::max;
 use std::collections::HashSet;
 use std::fmt;
 use std::fs;
@@ -190,6 +191,10 @@ impl Vector {
         let y = parts.next().unwrap().parse::<i64>().unwrap();
         let z = parts.next().unwrap().parse::<i64>().unwrap();
         Vector::new(x, y, z)
+    }
+
+    fn manhattan_distance(&self) -> i64 {
+        self.data.iter().map(|x| x.abs()).sum()
     }
 
     fn test() {
@@ -882,6 +887,19 @@ fn part1(filename: &str, test: bool) {
 
     println!("{}", all_beacons.len());
     assert!(all_beacons.len() == 79 || all_beacons.len() == 390);
+
+    let mut max_dist = 0;
+    for a in &resolved_scanners {
+        for b in &resolved_scanners {
+            let dist = (a.unwrap().offset - b.unwrap().offset).manhattan_distance();
+            if dist > max_dist {
+                max_dist = dist;
+            }
+        }
+    }
+
+    println!("max_dist: {}", max_dist);
+    assert!(max_dist == 3621 || max_dist == 13327);
 }
 
 fn test_sample_rots() {
