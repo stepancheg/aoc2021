@@ -133,17 +133,26 @@ fn run(filename: &str, test: bool) {
     }
 
     let mut map = input.map;
-    for i in 0..2 {
-        println!("before step {}", i);
-        map.print();
-        map = map.apply(&input.alg);
-    }
-    println!("after step 2");
+    println!("init map:");
     map.print();
-    println!();
-    println!("lit pixels: {}", map.lit_pixels());
-    // 5437 does not work
-    assert!(map.lit_pixels() == 35 || map.lit_pixels() == 5379);
+
+    for i in 0..50 {
+        map = map.apply(&input.alg);
+        println!("after step {}:", i);
+        map.print();
+
+        if i + 1 == 2 || i + 1 == 50 {
+            println!();
+            println!("lit pixels: {}", map.lit_pixels());
+            if i + 1 == 2 {
+                assert!(map.lit_pixels() == 35 || map.lit_pixels() == 5379);
+            } else if i + 1 == 50 {
+                assert!(map.lit_pixels() == 3351 || map.lit_pixels() == 17917);
+            } else {
+                unreachable!();
+            }
+        }
+    }
 }
 
 fn main() {
