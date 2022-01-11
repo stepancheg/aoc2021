@@ -150,7 +150,7 @@ impl Cuboids {
     }
 }
 
-fn run(filename: &str, test: u32) {
+fn part1(filename: &str, test: u32) {
     println!("{}", filename);
     let input = Input::parse(filename);
     let mut cuboids = Cuboids::default();
@@ -186,8 +186,45 @@ fn run(filename: &str, test: u32) {
     assert!(count_50 == 39 || count_50 == 590784 || count_50 == 503864);
 }
 
+fn part2(filename: &str) {
+    println!("{}", filename);
+    let input = Input::parse(filename);
+    let mut cuboids = Cuboids::default();
+
+    let millions = [
+        Range {
+            from: -1000000,
+            to_incl: 1000000,
+        },
+        Range {
+            from: -1000000,
+            to_incl: 1000000,
+        },
+        Range {
+            from: -1000000,
+            to_incl: 1000000,
+        },
+    ];
+
+    cuboids.update(&millions, false);
+
+    for command in &input.commands {
+        cuboids.update(&command.coords, command.on);
+    }
+
+    let count_1m = cuboids.count_on(&millions);
+    println!("count 1m: {}", count_1m);
+    assert!(count_1m == 2758514936282235 || count_1m == 1255547543528356);
+}
+
 fn main() {
-    run("day22-input-test-1.txt", 0);
-    run("day22-input-test-2.txt", 1);
-    run("day22-input.txt", 2);
+    println!("Part 1");
+    part1("day22-input-part1-test-1.txt", 0);
+    part1("day22-input-part1-test-2.txt", 1);
+    part1("day22-input.txt", 2);
+
+    println!();
+    println!("Part 2");
+    part2("day22-input-part2-test.txt");
+    part2("day22-input.txt");
 }
